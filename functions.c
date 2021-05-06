@@ -21,8 +21,8 @@
 #include <malloc.h>
 #include "functions.h"
 
+
 int StockAvailable =0;
-int SetFromThemeCounter = 0;
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //            FUNÇÕES //{}
@@ -40,27 +40,85 @@ void program_ready()
 	printf("Concluído!\n");
 }
 
-
-//
-void printMenu()
+void  GetSetPartsListFromSetCode( Parts * PartsList, Parts_Sets * PartsSetsList, char * searchSetCode, char * searchClass)
 {
+	printf("Got in void functions");
+	Parts * returnList = MALLOC(Parts);
+	Parts_Sets * auxList = MALLOC(Parts_Sets); 
+	for ( ; PartsSetsList ; PartsSetsList = PartsSetsList->next ) 
+	{
+		if(strcmp(PartsSetsList->set_num, searchSetCode) == 0 )
+		{	
+				//	auxList = insere_PartsSets(auxList, PartsSetsList->set_num, PartsSetsList->quantity, PartsSetsList->part_num);
+			for ( ; PartsList ; PartsList = PartsList->next ) 
+			{
+				if(strcmp(PartsList->class_part, searchClass) == 0 )
+					//insere part in new partsList e retorna essa lista
+					//returnList = insere_Parts( returnList, PartsList->part_num, PartsList->nome, PartsList->class_part, PartsList->stock_available);
+//					
+				printf("\nNome:%s\nPeça Nº-> %s\nTema: %s\nStock-> %i\n\n", PartsList->nome, PartsList->part_num, PartsList->class_part, PartsList->stock_available);	
+			}
+		}
+	}
+	
+}
+
+Parts * RemovePartsByClass(Parts * list, char * type)
+{
+	Parts * aux = list;
+
+	if(aux && strcmp(aux->class_part, type) ==0 )
+	{
+		list = list->next;
+		free(aux->nome);
+		free(aux->part_num);
+		free(aux->class_part);
+		//free(aux->stock_available);
+		free(aux);
+	}	else if(aux){
+		for( ; aux->next; aux = aux->next) {
+			if(strcmp(aux->next->class_part, type) == 0) 
+			{
+				Parts * ToDelete = aux->next;
+				aux->next = ToDelete->next;
+				free(ToDelete->nome);
+				free(ToDelete->part_num);
+				free(ToDelete->class_part);
+				//free(ToDelete->stock_available);
+				free(ToDelete);
+			}
+		}
+	}
+	return list;
+}
+//{}
+void printMainMenu()
+{
+
+
 printf("\n\n**Introduza uma das seguintes opções:***\n");
 printf("1-> Obter os conjuntos de um tema.\n");
-printf("2-> Procurar Peças para um Set.\n");
+printf("2-> Procurar Peças por tipo de um Conjunto.\n");
 printf("3-> Peças necessárias para um Set.\n");
 printf("4-> Saber o total de peças em stock\n");
 printf("5-> Total de peças por Set.\n");
 printf("6-> Peça mais usada.\n");
 printf("7-> Conjuntos Construíveis (stock existente).\n");
 
-printf("\n*--------EXTRA--------* \n");
+
+printf("\n*--------Operações--------* \n");
+printf("\n\n**Introduza uma das seguintes opções:***\n");
 printf("A-> Alterar o stock de uma peça.\n");
 printf("B-> Adicionar ao stock.\n");
-printf("C-> Remover todas as peças de um tipo.\n");
-printf("D-> Remover todas os Sets de um tema.\n");
-printf("*----------------------*\n");
-}
+printf("T-> Remover todas as peças de um tipo..\n");
+printf("X-> Remover todas os Sets de um tema.\n");
+printf("Z-> Listar todos Conjuntos.\n");
 
+printf("\n0-> Voltar ao menu principal.\n");
+printf("*----------------------*\n");
+
+
+}
 
 //inserir dados na lista de Parts 
 Parts *insere_PartsinList(Parts *PartsList,char *nome, char *part_num, int stockAvailable, char * class_part) {
@@ -112,7 +170,7 @@ Parts * getPartsContents(char *file, Parts *Parts_List)
 	
 		if(counter > 1)
 		{
-			StockAvailable += stock;
+			StockAvailable = StockAvailable + stock;
 			Parts_List = insere_Parts(Parts_List, part_num, name, class, stock);
 		}
 		
@@ -137,12 +195,17 @@ while(!feof(fh))
 
 	//printf("\nSet Nº-> %s \nNome-> %s \nAno-> %s \nTema-> %s \n", set_num, name, year, theme );
 	if(counter > 1)
-	SetsList = insere_Set(SetsList, set_num, name, temp_year,theme);
+	SetsList = Insert_Sort_Set(SetsList, set_num, name, temp_year,theme);
 }
 fclose(fh);
 return SetsList;
 }
 
+void showCurrentStockAvailable(){
+	printf("Total de Peças contadas: %i\n", StockAvailable);
+	printf("Prima uma tecla para voltar...");
+	getchar();
+}
 //
 Parts * getPartsFromSet( Parts_Sets * SetsPartsList, Parts * PartsList, char *classpart, char*setCode)
 {
@@ -162,21 +225,31 @@ Parts * getPartsFromSet( Parts_Sets * SetsPartsList, Parts * PartsList, char *cl
 
 //Function to get all parts from a set in a list and list that Parts Info
 //{}
-Parts_Sets * getAllPartsFromSet(Parts_Sets * PartsSetsList, char * setNumber)
+void getAllPartsFromSet(Parts_Sets * PartsSetsList,  Parts * PartsList, char * setNumber)
 {
 	//funcao não está a guardar na lista as partes certas, verificar
 	Parts_Sets * TempPartsSetsList = MALLOC(Parts_Sets);
+
 	for ( ; PartsSetsList; PartsSetsList->next) 
 	{
 		if(strcmp(PartsSetsList->set_num, setNumber) == 0)
 		{
 			//insert Part Num in PartsList;
-			TempPartsSetsList = insere_PartsSets(TempPartsSetsList, PartsSetsList->set_num, PartsSetsList->quantity, PartsSetsList->part_num );
+			
+			for ( ; PartsList; PartsList->next)
+			{
+					if(strcmp( PartsList->part_num,PartsSetsList->part_num ) == 0)
+					{		
+						printf("\nNome-> %s\nCódigo: %s\nTipo: %s\nStock Disponível: %s\nQuantidade necessária %i",PartsList->nome, PartsList->part_num, PartsList->class_part, PartsList->stock_available, PartsSetsList->quantity);	
+					}
+			}
+
+			//TempPartsSetsList = insere_PartsSets(TempPartsSetsList, PartsSetsList->set_num, PartsSetsList->quantity, PartsSetsList->part_num );
 			
 		}
 	}
 
-	return TempPartsSetsList;
+	//return TempPartsSetsList;
 }
 
 
@@ -220,21 +293,35 @@ Parts_Sets *insere_PartsSets(Parts_Sets *PartsSets_List, char * set_number, int 
 }
 
 //Procura na SetList pelo nome do tema e devolve lista apenas com os pesquisados
-Sets * getSetFromTheme(Sets * SetsList, char *search)
+Sets * getSetFromTheme(Sets * SetsList, char *search, int SetFromThemeCounter)
 {
 	 Sets * SearchSetList = MALLOC(Sets);
 	for ( ; SetsList ; SetsList = SetsList->next ) {
-			if((SetsList->theme) && strcmp(SetsList->theme, search) == 0 ) 
+			if((SetsList->theme) && (SetsList->setnumber) && strcmp(SetsList->theme, search) == 0 ) 
             {
-				SetFromThemeCounter = SetFromThemeCounter +1 ;
-				SearchSetList = insere_Set(SearchSetList, SetsList->setnumber, SetsList->set_name, SetsList->year, SetsList->theme);
+				SetFromThemeCounter++ ;
+				//printf("\n%s\n%s", SetsList->set_name, SetsList->year);
+				SearchSetList = Insert_Sort_Set(SearchSetList, SetsList->setnumber, SetsList->set_name, SetsList->year, SetsList->theme);
 			}
         }
-       return SearchSetList;
+	
+	return SearchSetList;
 }
 
+//altera o stock existente na lista de Peças (Parts)
+Parts * changeStockinPart(Parts * PartsList, char* partToChange, int newStock)
+{
+	for( ; PartsList; PartsList = PartsList->next)
+	{
+		if(strcmp(PartsList->part_num, partToChange) == 0) {
+			PartsList->stock_available = newStock;
+			break;
+		}
+	}
+	return PartsList;
+//{}	
 
-
+}
 //Search for part Function
 Parts * PartSearch( Parts * lst, char * searchCode) 
 {
@@ -244,6 +331,33 @@ Parts * PartSearch( Parts * lst, char * searchCode)
 	}else {
 		return PartSearch(lst->next, searchCode);
 	}	
+}
+
+//inserir dados na lista de Sets de forma ordenada
+Sets * Insert_Sort_Set(Sets * SetsList, char *setnumber, char *nome, int year, char * theme)
+{
+	Sets * novo = MALLOC(Sets);
+	novo->setnumber = setnumber;
+	novo->year = year;
+	novo->set_name = nome;
+	novo->theme = theme;
+	//novo->next = SetsList;
+
+	if(!SetsList || novo->year > SetsList->year)
+	{	
+		novo->next = SetsList;
+		SetsList = novo;
+	} 
+	else
+	{	
+		Sets * aux = SetsList;
+			while(aux->next && novo->year > aux->next->year)
+			aux = aux->next;
+		novo->next 	= aux->next;
+		aux->next 	= novo;
+	}
+	return SetsList;
+	//{	}
 }
 
 //inserir dados na lista de Sets (sets.tsv)
@@ -284,16 +398,23 @@ void listarPartsSets(Parts_Sets *lst) {
         printf("\n");
 } 
 
-//Listagem de Lista de SETS
-void listarSets(Sets *lst) {
+//Listagem de Lista de Partes
+void listarParts(Parts *lst) {
         for ( ; lst ; lst = lst->next ) {
-            printf("\nSet Nº->%s\nNome->%s\nTema->%s\nAno->%d\n", lst->setnumber, lst->set_name, lst->theme, lst->year);
+            printf("\nNome->%s\nPeça Nº->%s\nTipo->%s\nStock->%d\n", lst->nome, lst->part_num, lst->class_part, lst->stock_available);
         }
         printf("\n");
 } 
 
 
 
-
-
+//Listagem de Lista de SETS
+void listarSets(Sets *lst) {
+	if(!lst)
+	{printf("A lista não contém dados");} 
+        for ( ; lst ; lst = lst->next ) {
+            printf("\nSet Nº->%s\nNome->%s\nTema->%s\nAno->%d\n", lst->setnumber, lst->set_name, lst->theme, lst->year);
+        }
+        printf("\n");
+} 
 
