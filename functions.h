@@ -105,6 +105,9 @@ Parts * RemovePartsByClass(Parts * list, char * type);
 Parts_Sets *insere_PartsSets(Parts_Sets *PartsSets_List, char * set_number, int quantity, char * part_num);
 Sets * getSetFromTheme(Sets * SetsList, char *search, int SetFromThemeCounter);
 
+
+Parts * RemoveSetsByTheme(Parts * list, char * type);
+
 Parts *insere_PartsinList(Parts *PartsList,char *nome, char *part_num, int stockAvailable, char * class_part);
 
 Parts * PartSearch( Parts * lst, char * searchCode);
@@ -127,5 +130,5 @@ void listarParts(Parts *lst);
 //função que guarda numa lista de parts os códigos de peças necessárias para um set
 void GetSetPartsListFromSetCode( Parts * PartsList, Parts_Sets * PartsSetsList, char * searchSetCode, char * searchTheme);
 
-
+int gettotalpieces( Parts_Sets * lst, char * SetCode);
 #endif

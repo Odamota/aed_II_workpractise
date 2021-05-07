@@ -42,7 +42,7 @@ void program_ready()
 
 void  GetSetPartsListFromSetCode( Parts * PartsList, Parts_Sets * PartsSetsList, char * searchSetCode, char * searchClass)
 {
-	printf("Got in void functions");
+	//printf("Got in void functions");
 	Parts * returnList = MALLOC(Parts);
 	Parts_Sets * auxList = MALLOC(Parts_Sets); 
 	for ( ; PartsSetsList ; PartsSetsList = PartsSetsList->next ) 
@@ -54,7 +54,7 @@ void  GetSetPartsListFromSetCode( Parts * PartsList, Parts_Sets * PartsSetsList,
 			{
 				if(strcmp(PartsList->class_part, searchClass) == 0 )
 					//insere part in new partsList e retorna essa lista
-					//returnList = insere_Parts( returnList, PartsList->part_num, PartsList->nome, PartsList->class_part, PartsList->stock_available);
+					returnList = insere_Parts( returnList, PartsList->part_num, PartsList->nome, PartsList->class_part, PartsList->stock_available);
 //					
 				printf("\nNome:%s\nPeça Nº-> %s\nTema: %s\nStock-> %i\n\n", PartsList->nome, PartsList->part_num, PartsList->class_part, PartsList->stock_available);	
 			}
@@ -62,6 +62,38 @@ void  GetSetPartsListFromSetCode( Parts * PartsList, Parts_Sets * PartsSetsList,
 	}
 	
 }
+
+Sets  * RemoveSetsByTheme(Sets * list, char * theme)
+{
+	Sets * aux = list;
+
+	if(aux && strcmp(aux->theme, them) ==0 )
+	{
+		list = list->next;
+		free(aux->set_name);
+		free(aux->setnumber);
+		free(aux->theme);
+		free(aux->year);
+		free(aux);
+	}	else if(aux){
+		for( ; aux->next; aux = aux->next) {
+			if(strcmp(aux->next->theme, theme) == 0) 
+			{
+				Parts * ToDelete = aux->next;
+				aux->next = ToDelete->next;
+				free(ToDelete->nome);
+				free(ToDelete->part_num);
+				free(ToDelete->class_part);
+				free(ToDelete->theme);
+				//free(ToDelete->stock_available);
+				free(ToDelete);
+			}
+		}
+	}
+	return list;
+}
+//{}
+
 
 Parts * RemovePartsByClass(Parts * list, char * type)
 {
@@ -322,6 +354,25 @@ Parts * changeStockinPart(Parts * PartsList, char* partToChange, int newStock)
 //{}	
 
 }
+
+//{}	
+//Função p/ exercício 5
+int gettotalpieces( Parts_Sets * lst, char * SetCode)
+{
+	int counter = 0;
+
+	for( ; lst ; lst = lst->next)
+	{
+		if(strcmp(lst->set_num, SetCode) == 0)
+		{
+			counter == counter +1;
+		}
+	}
+	return counter;
+
+}
+
+
 //Search for part Function
 Parts * PartSearch( Parts * lst, char * searchCode) 
 {
@@ -343,7 +394,7 @@ Sets * Insert_Sort_Set(Sets * SetsList, char *setnumber, char *nome, int year, c
 	novo->theme = theme;
 	//novo->next = SetsList;
 
-	if(!SetsList || novo->year > SetsList->year)
+	if(!SetsList || novo->year < SetsList->year)
 	{	
 		novo->next = SetsList;
 		SetsList = novo;

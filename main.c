@@ -45,9 +45,11 @@ int main(int argc, char **argv)
 		//interpreter(option, SetsList, PartsList, PartsSetsList);
 		char  search_theme[20];
 		char searchSetCode[20];
+		char countSetCode[20];
 		char searchPartType[20];
 		char partToChange[20];
 		char TypeToRemove[20];
+		char themeToRemove[20];
 		int newStock;
 		switch(option)
 		{
@@ -123,6 +125,7 @@ int main(int argc, char **argv)
 				scanf("%s", &newStock );
 				PartsList = changeStockinPart(PartsList, partToChange, newStock);
 				printf("\nConcluído!\nPrima uma tecla para continuar e gravar os dados...");
+				getchar();
 				//savePartsData(PartsList);
 			break;
 			case 'X':
@@ -132,7 +135,22 @@ int main(int argc, char **argv)
 				PartsList = RemovePartsByClass(PartsList, TypeToRemove);
 				printf("\nConcluído\nPrima qualquer tecla para continuar");
 				getchar();
-
+			case 'T':
+				//Remover Sets por Tema
+				system("cls || clear");
+				printf("\nQual o tema que pretende remover?");
+				scanf("%s", &themeToRemove );
+				SetsList = RemoveSetsByTheme(SetsList, themeToRemove);
+				printf("\nConcluído\nPrima qualquer tecla para continuar");
+				getchar();
+			case '5':
+				printf("\nQual o conjunto que procura?\n");
+				scanf("%s", &countSetCode);
+				//gettotalpieces(PartsSetsList, searchSetCode);
+				int totalpieces;
+				totalpieces = gettotalpieces(PartsSetsList, countSetCode);
+				printf("\nO conjunto %s contém %i peças\n", &countSetCode, totalpieces);
+				getchar();
 			default:
 			break;
 		}
