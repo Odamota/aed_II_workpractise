@@ -106,7 +106,7 @@ Parts_Sets *insere_PartsSets(Parts_Sets *PartsSets_List, char * set_number, int 
 Sets * getSetFromTheme(Sets * SetsList, char *search, int SetFromThemeCounter);
 
 
-Parts * RemoveSetsByTheme(Parts * list, char * type);
+Sets * RemoveSetsByTheme(Sets * list, char * type);
 
 Parts *insere_PartsinList(Parts *PartsList,char *nome, char *part_num, int stockAvailable, char * class_part);
 

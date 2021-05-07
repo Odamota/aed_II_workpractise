@@ -67,24 +67,26 @@ Sets  * RemoveSetsByTheme(Sets * list, char * theme)
 {
 	Sets * aux = list;
 
-	if(aux && strcmp(aux->theme, them) ==0 )
+	if(aux && strcmp(aux->theme, theme) ==0 )
 	{
 		list = list->next;
 		free(aux->set_name);
 		free(aux->setnumber);
 		free(aux->theme);
-		free(aux->year);
+		//free(aux->year);
 		free(aux);
 	}	else if(aux){
 		for( ; aux->next; aux = aux->next) {
 			if(strcmp(aux->next->theme, theme) == 0) 
 			{
-				Parts * ToDelete = aux->next;
+				Sets * ToDelete = aux->next;
 				aux->next = ToDelete->next;
-				free(ToDelete->nome);
-				free(ToDelete->part_num);
-				free(ToDelete->class_part);
+				free(ToDelete->set_name);
+				free(ToDelete->setnumber);
 				free(ToDelete->theme);
+				//free(ToDelete->year);
+
+				
 				//free(ToDelete->stock_available);
 				free(ToDelete);
 			}
